@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chat with Page</title>
+    <style>
+      /* Basic styling for the popup */
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        min-width: 450px;
+        height: 500px;
+        background-color: #f0f2f5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      #chat {
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin: 10px;
+        height: 420px;
+        width: 420px;
+        overflow-y: auto;
+        font-size: 16px;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        transition: box-shadow 0.3s ease;
+      }
+
+      #chat:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      #chat h1,
+      #chat h2,
+      #chat h3 {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+        transition: color 0.3s ease;
+      }
+
+      #chat h1 {
+        font-size: 24px;
+      }
+
+      #chat h2 {
+        font-size: 20px;
+      }
+
+      #chat h3 {
+        font-size: 18px;
+      }
+
+      #chat p,
+      #chat ul,
+      #chat ol {
+        margin: 8px 0;
+        color: #555;
+        transition: color 0.3s ease;
+      }
+
+      #chat code {
+        font-family: monospace;
+        background-color: #f5f5f5;
+        padding: 2px 4px;
+        border-radius: 4px;
+      }
+
+      #chat pre {
+        background-color: #f5f5f5;
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+      }
+
+      #inputSection {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 12px;
+        width: 100%;
+        max-width: 600px;
+      }
+
+      #input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      #input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        outline: none;
+      }
+
+      #sendButton,
+      #summarizeButton {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+      }
+
+      #sendButton {
+        background-color: #007bff;
+      }
+
+      #summarizeButton {
+        background-color: #26db65;
+      }
+
+      #sendButton:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+      }
+
+      #summarizeButton:hover {
+        background-color: #1aa34a;
+        transform: translateY(-2px);
+      }
+
+      #sendButton:active {
+        background-color: #004085;
+      }
+
+      #summarizeButton:active {
+        background-color: #1aa34a;
+      }
+
+      .chat-bubble {
+        padding: 10px;
+        margin: 5px;
+        border-radius: 10px;
+        max-width: 75%;
+        clear: both;
+        word-break: break-all;
+        position: relative;
+      }
+      .chat-bubble.you {
+        background-color: #dcf8c6;
+        text-align: right;
+        float: right;
+      }
+      .chat-bubble.bot {
+        background-color: #f1f0f0;
+        text-align: left;
+        float: left;
+      }
+      .copy-button {
+        position: absolute;
+        bottom: 5px;
+        right: 10px;
+        background-color: #4caf50;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: none; /* 隐藏按钮 */
+      }
+
+      .chat-bubble:hover .copy-button {
+        display: block; /* 鼠标悬停时显示按钮 */
+      }
+    </style>
+  </head>
+  <body>
+    <div id="inputSection">
+      <input type="text" id="input" placeholder="Type a message..." />
+      <button id="sendButton">Send</button>
+      <button id="summarizeButton">Summarize</button>
+    </div>
+    <div id="chat"></div>
+    <script src="marked.min.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

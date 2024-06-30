@@ -1,0 +1,8 @@
+#my-sidebar-iframe {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 500px;
+  height: 100vh;
+  z-index: 99999; /* 设置 z-index，以确保 iframe 位于其他元素之上 */
+}
