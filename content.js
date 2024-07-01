@@ -1,6 +1,14 @@
 // Extract the text content from the current web page
 function getPageContent() {
-  return document.body.innerText;
+  const constructedWebPageData = {
+    title: document.title,
+    url: window.location.href,
+    content: document.body.innerText,
+    links: Array.from(document.links).map((link) => link.href),
+    images: Array.from(document.images).map((image) => image.src),
+    timestamp: new Date().toISOString(),
+  }
+  return JSON.stringify(constructedWebPageData);
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
