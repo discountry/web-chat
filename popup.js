@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const summarizeButton = document.getElementById("summarizeButton");
   let pageContent = "";
   let chatHistory = [];
+  let botBubble = null;
 
   // Request the page content from the content script
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -59,8 +60,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sender === "Bot") {
       messageElement.classList.add("bot");
       messageElement.innerHTML = marked.parse(message);
-    } else {
+    } else if (sender === "You") {
       messageElement.classList.add("you");
+      messageElement.textContent = message;
+    } else {
+      messageElement.classList.add("system");
       messageElement.textContent = message;
     }
   
@@ -69,12 +73,14 @@ document.addEventListener("DOMContentLoaded", () => {
   
     chat.appendChild(messageElement);
     chat.scrollTop = chat.scrollHeight;
+
+    return messageElement;
   };
   
   const sendMessage = (message) => {
     createChatBubble("You", message);
     // 创建一个临时的 bot 气泡，内容为省略号
-    createChatBubble("Bot", "..."); // 这里添加临时气泡
+    botBubble = createChatBubble("Bot", "..."); // 这里添加临时气泡
   
     chrome.runtime.sendMessage(
       {
@@ -84,24 +90,24 @@ document.addEventListener("DOMContentLoaded", () => {
         history: chatHistory,
       },
       (response) => {
-        if (response.success) {
-          const botMessage = response.data.message.content;
-          // 移除临时气泡
-          const lastBubble = chat.lastChild; // 获取最后一个气泡
-          if (lastBubble) {
-            chat.removeChild(lastBubble); // 移除最后一个气泡
-          }
-          // 创建正式的 bot 气泡
-          createChatBubble("Bot", botMessage);
-          chatHistory.push({ role: "user", content: message });
-          chatHistory.push({ role: "assistant", content: botMessage });
-        } else {
+        if (!response.success) {
           console.error("Error:", response.error);
           createChatBubble("Error", response.error);
         }
       }
     );
   };
+
+  // 监听来自后台脚本的流式更新消息
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "streamUpdate") {
+      const botMessage = message.content;
+      if (botBubble) {
+        botBubble.innerHTML = marked.parse(botMessage); // 更新临时 bot 气泡内容
+      }
+      chat.scrollTop = chat.scrollHeight; // 保持滚动条在底部
+    }
+  });
 
   sendButton.addEventListener("click", () => {
     const userMessage = input.value.trim();

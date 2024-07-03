@@ -6,7 +6,6 @@ function getPageContent() {
     content: document.body.innerText,
     links: Array.from(document.links).map((link) => link.href),
     images: Array.from(document.images).map((image) => image.src),
-    timestamp: new Date().toISOString(),
   }
   return JSON.stringify(constructedWebPageData);
 }

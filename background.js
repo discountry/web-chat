@@ -22,7 +22,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           messages: [
             {
               role: "system",
-              content: `根据当前网页内容回答之后对话中我提出的所有问题。网页内容："""${request.context}"""`,
+              content: `今天是${new Date().toLocaleTimeString()}根据当前网页内容回答之后对话中我提出的所有问题。网页内容："""${request.context}"""`,
             },
             ...request.history,
             {
@@ -30,35 +30,48 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
               content: request.message,
             },
           ],
-          stream: false,
+          stream: true, // Enable streaming
           options: {
             num_ctx: 40960,
           },
         };
 
         const response = await fetch(apiUrl, {
-          headers: {
-            "Content-Type": "application/json",
-          },
           method: "POST",
           body: JSON.stringify(input),
         });
 
-        console.log(response);
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+        const reader = response.body.getReader();
+        if (!reader) {
+          throw new Error("Failed to read response body")
         }
 
-        const resultJson = await response.json();
-        console.log(resultJson);
-        sendResponse({ success: true, data: resultJson });
+        const decoder = new TextDecoder("utf-8");
+        let partialMessage = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const rawJson = decoder.decode(value, { stream: true });
+          const jsonContent = JSON.parse(rawJson);
+
+          partialMessage += jsonContent.message.content;
+
+          if (partialMessage) {
+            chrome.runtime.sendMessage({
+              action: "streamUpdate",
+              content: partialMessage,
+            });
+          }
+        }
+
+        sendResponse({ success: true });
       } catch (error) {
         sendResponse({ success: false, error: error.message });
       }
     });
 
-    // Return true to indicate that the response will be sent asynchronously
     return true;
   }
 });
