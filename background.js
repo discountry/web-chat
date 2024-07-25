@@ -18,7 +18,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     chrome.storage.sync.get(["apiToken"], async (result) => {
       try {
         const input = {
-          model: "qwen2",
+          model: "llama3.1",
           messages: [
             {
               role: "system",
