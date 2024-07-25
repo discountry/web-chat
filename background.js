@@ -32,7 +32,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           ],
           stream: true, // Enable streaming
           options: {
-            num_ctx: 40960,
+            num_ctx: 12800,
           },
         };
 
